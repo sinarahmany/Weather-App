@@ -5306,9 +5306,29 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   mounted: function mounted() {
     this.fetchData();
+    var placesAutocomplete = places({
+      appId: '1W2YBYGWDO',
+      apiKey: '61fb33d4ad49e4b0d4a3a33a4cece0fc',
+      container: document.querySelector('#address')
+    }).configure({
+      type: 'city',
+      aroundLatLngViaIP: false
+    });
+    var $address = document.querySelector('#address-value');
+    placesAutocomplete.on('change', function (e) {
+      $address.textContent = e.suggestion.value;
+      this.location.name = "".concat(e.suggestion.name, ", ").concat(e.suggestion.country);
+      this.location.lat = e.suggestion.latlng.lat;
+      this.location.lng = e.suggestion.latlng.lng;
+    });
+    placesAutocomplete.on('clear', function () {
+      $address.textContent = 'none';
+    });
   },
   data: function data() {
     return {
@@ -5351,10 +5371,22 @@ __webpack_require__.r(__webpack_exports__);
           skycons.add("iconCurrent", _this.currentTemperature.summary + '-night');
           skycons.play();
         }
+
+        _this.$nextTick(function () {
+          skycons.add('icon1', document.getElementById('icon1').getAttribute('data-icon') + '-day');
+          skycons.add('icon2', document.getElementById('icon2').getAttribute('data-icon') + '-day');
+          skycons.add('icon3', document.getElementById('icon3').getAttribute('data-icon') + '-day');
+          skycons.play();
+        });
       });
     },
     toKebabCase: function toKebabCase(stringToConvert) {
       return stringToConvert.split(' ').join('-');
+    },
+    toDayOfWeek: function toDayOfWeek(dateString) {
+      var days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+      var d = new Date(dateString);
+      return days[d.getDay()];
     }
   }
 });
@@ -28009,9 +28041,7 @@ var render = function () {
                     "Feels like " + _vm._s(_vm.currentTemperature.feels) + "°C"
                   ),
                 ]),
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "mx-5" }, [
+                _vm._v(" "),
                 _c("div", { staticClass: "font-semibold" }, [
                   _vm._v(_vm._s(_vm.currentTemperature.summary)),
                 ]),
@@ -28035,28 +28065,54 @@ var render = function () {
             staticClass:
               "future-weather text-sm bg-gray-800 px-6 py-8 overflow-hidden",
           },
-          _vm._l(_vm.daily, function (item) {
-            return _c(
-              "div",
-              { key: item.date, staticClass: "flex items-center" },
-              [
-                _c("div", { staticClass: "w-1/6 text-lg text-gray-200" }, [
-                  _vm._v(
-                    "\n                    " +
-                      _vm._s(
-                        new Date(item.date + "T00:00:00.000Z").toLocaleString(
-                          "en-us",
-                          { weekday: "long" }
-                        )
-                      )
-                  ),
-                ]),
-                _vm._v(" "),
-                _vm._m(1, true),
-                _vm._v(" "),
-                _vm._m(2, true),
-              ]
-            )
+          _vm._l(_vm.daily, function (item, index) {
+            return index < 5
+              ? _c(
+                  "div",
+                  {
+                    key: item.date,
+                    staticClass: "flex items-center",
+                    class: { "mt-4": index > 0, "font-semibold": index == 0 },
+                  },
+                  [
+                    _c("div", { staticClass: "w-1/6 text-lg text-gray-200" }, [
+                      _vm._v(
+                        "\n                    " +
+                          _vm._s(_vm.toDayOfWeek(item.date))
+                      ),
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "w-4/6 px-4 flex items-center" }, [
+                      _c("div", [
+                        _c("canvas", {
+                          attrs: {
+                            id: "icon" + (index + 1),
+                            "data-icon": _vm.toKebabCase(
+                              item.day.condition.text
+                            ),
+                            width: "24",
+                            height: "24",
+                          },
+                        }),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "ml-3" }, [
+                        _vm._v(_vm._s(item.day.condition.text)),
+                      ]),
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "w-1/6 text-right" }, [
+                      _c("div", [
+                        _vm._v(_vm._s(Math.round(item.day.maxtemp_c)) + "°C"),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", [
+                        _vm._v(_vm._s(Math.round(item.day.mintemp_c)) + "°C"),
+                      ]),
+                    ]),
+                  ]
+                )
+              : _vm._e()
           }),
           0
         ),
@@ -28070,27 +28126,19 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "places-input text-gary-800" }, [
-      _c("input", { staticClass: "w-full", attrs: { type: "text" } }),
-    ])
-  },
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "w-4/6 px-4 flex items-center" }, [
-      _c("div", [_vm._v("icon")]),
+      _c("input", {
+        staticClass: "form-control",
+        attrs: {
+          type: "search",
+          id: "address",
+          placeholder: "Where are we going?",
+        },
+      }),
       _vm._v(" "),
-      _c("div", { staticClass: "ml-3" }, [_vm._v("Cloudy with a...")]),
-    ])
-  },
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "w-1/6 text-right" }, [
-      _c("div", [_vm._v("5°C")]),
-      _vm._v(" "),
-      _c("div", [_vm._v("-2°C")]),
+      _c("p", [
+        _vm._v("Selected: "),
+        _c("strong", { attrs: { id: "address-value" } }, [_vm._v("none")]),
+      ]),
     ])
   },
 ]

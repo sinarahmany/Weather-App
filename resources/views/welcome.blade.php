@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="/css/app.css">
-    <script src="https://darkskyapp.github.io/skycons/skycons.js"></script>
+    <script src="https://darkskyapp.github.io/skycons/skycons.js" ></script>
+    <script src="https://cdn.jsdelivr.net/npm/places.js@1.19.0" ></script>
 </head>
 <body class="bg-blue-200">
 <div id="app" class='flex justify-center pt-16'>
